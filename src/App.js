@@ -10,18 +10,66 @@ class App extends Component {
         Home: false,
         About: false,
         Contact: false,
-        Chat: false
-      }
+        Chat: false,
+      },
+      messages: [],
+      newMessage: '',
     };
+  }
+
+  componentDidMount() {
+    
+    fetch('http://localhost:5000/messages')
+      .then((response) => response.json())
+      .then((data) => this.setState({ messages: data }))
+      .catch((error) => console.error('Error:', error));
   }
 
   toggleComponent = (componentName) => {
     this.setState((prevState) => ({
       components: {
         ...prevState.components,
-        [componentName]: !prevState.components[componentName]
-      }
+        [componentName]: !prevState.components[componentName],
+      },
     }));
+  };
+
+  handleChange = (event) => {
+    this.setState({ newMessage: event.target.value });
+  };
+
+  handleSubmit = () => {
+    
+    const { newMessage } = this.state;
+    const userId = 'user123'; 
+    fetch('http://localhost:5000/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId, text: newMessage }),
+    })
+      .then((response) => response.json())
+      .then((data) =>
+        this.setState((prevState) => ({
+          messages: [...prevState.messages, data],
+          newMessage: '', 
+        }))
+      )
+      .catch((error) => console.error('Error:', error));
+  };
+  handleDelete = (index) => {
+    const updatedMessages = [...this.state.messages];
+    updatedMessages.splice(index, 1);
+    this.setState({ messages: updatedMessages }, () => {
+    
+      fetch(`http://localhost:5000/messages/${index}`, {
+        method: 'DELETE',
+      })
+        .then((response) => response.json())
+        .then((data) => console.log('Message deleted:', data))
+        .catch((error) => console.error('Error:', error));
+    });
   };
 
   render() {
@@ -70,6 +118,25 @@ class App extends Component {
               <p>{jsonData.chat.content}</p>
             </div>
           )}
+
+          <div className="message-list">
+            {this.state.messages.map((message, index) => (
+              <div key={index}>
+                <p>User: {message.userId}</p>
+                <p>Message: {message.text}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="message-input">
+            <input
+              type="text"
+              value={this.state.newMessage}
+              onChange={this.handleChange}
+              placeholder="Type your message..."
+            />
+            <button onClick={this.handleSubmit}>Send</button>
+          </div>
         </main>
       </div>
     );
