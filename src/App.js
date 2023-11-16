@@ -66,14 +66,17 @@ class App extends Component {
       .catch((error) => console.error('Error:', error));
   };
 
-  handleDelete = (id) => {
-    fetch(`http://localhost:5000/messages/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => {
-        this.fetchMessages(); 
+  handleDelete = (index) => {
+    const updatedMessages = [...this.state.messages];
+    updatedMessages.splice(index, 1);
+    this.setState({ messages: updatedMessages }, () => {
+      fetch(`http://localhost:5000/messages/${index}`, {
+        method: 'DELETE',
       })
-      .catch((error) => console.error('Error:', error));
+        .then((response) => response.json())
+        .then((data) => console.log('Message deleted:', data))
+        .catch((error) => console.error('Error:', error));
+    });
   };
 
   render() {
