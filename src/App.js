@@ -86,9 +86,9 @@ class App extends Component {
           <h1>Welcome to My App</h1>
         </header>
         <main>
-        <button onClick={() => this.toggleComponent('Home')}>
-            {this.state.components.Home ? 'Hide Home' : 'Home'}
-          </button>
+        <button className="home-btn" onClick={() => this.toggleComponent('Home')}>
+          {this.state.components.Home ? 'Hide Home' : 'Home'}
+        </button>
           {this.state.components.Home && (
             <div>
               <h2>{jsonData.home.title}</h2>
@@ -96,9 +96,9 @@ class App extends Component {
             </div>
           )}
 
-          <button onClick={() => this.toggleComponent('About')}>
-            {this.state.components.About ? 'Hide About' : 'About'}
-          </button>
+         <button className="about-btn" onClick={() => this.toggleComponent('About')}>
+          {this.state.components.About ? 'Hide About' : 'About'}
+         </button>
           {this.state.components.About && (
             <div>
               <h2>{jsonData.about.title}</h2>
@@ -106,9 +106,9 @@ class App extends Component {
             </div>
           )}
 
-          <button onClick={() => this.toggleComponent('Contact')}>
-            {this.state.components.Contact ? 'Hide Contact' : 'Contact'}
-          </button>
+          <button className="contact-btn" onClick={() => this.toggleComponent('Contact')}>
+          {this.state.components.Contact ? 'Hide Contact' : 'Contact'}
+         </button>
           {this.state.components.Contact && (
             <div>
               <h2>{jsonData.contact.title}</h2>
@@ -116,9 +116,10 @@ class App extends Component {
             </div>
           )}
 
-          <button onClick={() => this.toggleComponent('Chat')}>
-            {this.state.components.Chat ? 'Hide Chat' : 'Chat'}
-          </button>
+         <button className="chat-btn" onClick={() => this.toggleComponent('Chat')}>
+          {this.state.components.Chat ? 'Hide Chat' : 'Chat'}
+         </button>
+
           {this.state.components.Chat && (
             <div>
               <h2>{jsonData.chat.title}</h2>
@@ -126,12 +127,14 @@ class App extends Component {
             </div>
           )}
 
-          <div className="message-list">
+          <div className="message-list" style={{ textAlign: 'left' }}>
             {this.state.messages.map((message) => (
               <div key={message.id}>
                 <p>User: {message.userId}</p>
                 <p>Message: {message.text}</p>
-                <button onClick={() => this.handleDelete(message.id)}>Delete</button>
+                <button className="delete-btn" onClick={() => this.handleDelete(message.id)}>
+                  Delete
+               </button>
               </div>
             ))}
           </div>
