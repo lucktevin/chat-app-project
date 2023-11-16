@@ -14,16 +14,20 @@ class App extends Component {
       },
       messages: [],
       newMessage: '',
+      currentUser: '', 
     };
   }
 
   componentDidMount() {
-    
+    this.fetchMessages();
+  }
+
+  fetchMessages = () => {
     fetch('http://localhost:5000/messages')
       .then((response) => response.json())
       .then((data) => this.setState({ messages: data }))
       .catch((error) => console.error('Error:', error));
-  }
+  };
 
   toggleComponent = (componentName) => {
     this.setState((prevState) => ({
@@ -38,38 +42,38 @@ class App extends Component {
     this.setState({ newMessage: event.target.value });
   };
 
+  handleUserChange = (event) => {
+    this.setState({ currentUser: event.target.value });
+  };
+
   handleSubmit = () => {
-    
-    const { newMessage } = this.state;
-    const userId = 'user123'; 
+    const { newMessage, currentUser } = this.state;
+    if (!currentUser) {
+      alert('Please enter a username.');
+      return;
+    }
     fetch('http://localhost:5000/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userId, text: newMessage }),
+      body: JSON.stringify({ userId: currentUser, text: newMessage }),
     })
-      .then((response) => response.json())
-      .then((data) =>
-        this.setState((prevState) => ({
-          messages: [...prevState.messages, data],
-          newMessage: '', 
-        }))
-      )
+      .then(() => {
+        this.setState({ newMessage: '' });
+        this.fetchMessages(); 
+      })
       .catch((error) => console.error('Error:', error));
   };
-  handleDelete = (index) => {
-    const updatedMessages = [...this.state.messages];
-    updatedMessages.splice(index, 1);
-    this.setState({ messages: updatedMessages }, () => {
-    
-      fetch(`http://localhost:5000/messages/${index}`, {
-        method: 'DELETE',
+
+  handleDelete = (id) => {
+    fetch(`http://localhost:5000/messages/${id}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        this.fetchMessages(); 
       })
-        .then((response) => response.json())
-        .then((data) => console.log('Message deleted:', data))
-        .catch((error) => console.error('Error:', error));
-    });
+      .catch((error) => console.error('Error:', error));
   };
 
   render() {
@@ -79,7 +83,7 @@ class App extends Component {
           <h1>Welcome to My App</h1>
         </header>
         <main>
-          <button onClick={() => this.toggleComponent('Home')}>
+        <button onClick={() => this.toggleComponent('Home')}>
             {this.state.components.Home ? 'Hide Home' : 'Home'}
           </button>
           {this.state.components.Home && (
@@ -120,15 +124,22 @@ class App extends Component {
           )}
 
           <div className="message-list">
-            {this.state.messages.map((message, index) => (
-              <div key={index}>
+            {this.state.messages.map((message) => (
+              <div key={message.id}>
                 <p>User: {message.userId}</p>
                 <p>Message: {message.text}</p>
+                <button onClick={() => this.handleDelete(message.id)}>Delete</button>
               </div>
             ))}
           </div>
 
           <div className="message-input">
+            <input
+              type="text"
+              value={this.state.currentUser}
+              onChange={this.handleUserChange}
+              placeholder="Enter Username"
+            />
             <input
               type="text"
               value={this.state.newMessage}
