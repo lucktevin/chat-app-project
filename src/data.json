@@ -1,0 +1,19 @@
+{
+    "home": {
+      "title": "Welcome to Home",
+      "content": "Tevin's Chat App."
+    },
+    "about": {
+      "title": "About Us",
+      "content": "You will be able to send and recieve messages."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "content": "lucktevin@gmail.com"
+    },
+    "chat": {
+      "title": "Chat",
+      "content": "Start chat."
+    }
+  }
+  
